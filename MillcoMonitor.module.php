@@ -314,7 +314,7 @@ public function get_tasks()
 function monitor_tasks($pseudocron=0){
 
 		$report='';
-		$report.='Report generated at  ' . date("Y-m-d H:i", $this->GetPreference('monitor_last_run')) . '<br><br>';
+		$report.='Report generated at  ' . date("Y-m-d H:i", time()) . '<br><br>';
 		$something_changed=0;
 
 		// Are doing the file check? Really should... 

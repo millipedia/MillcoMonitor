@@ -1,7 +1,7 @@
 
 <h2>Report</h2>
 
-<p><b>Report last run :</b> {$mm.monitor_last_run}</p>
+<p><b>Report last run automagically: </b> {$mm.monitor_last_run}</p>
 <br>
 <p><a href="{cms_action_url action=defaultadmin run_report=1}" >{admin_icon icon='run.gif' class='editicon'} Run a report now</a></p>
 <p style="font-size:smaller">(NB Running a report can take some time.)</p>

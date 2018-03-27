@@ -55,7 +55,7 @@ class MillcoMonitorTask implements CmsRegularTask
 
         $mod = cms_utils::get_module('MillcoMonitor');
         $last_execute = $mod->GetPreference('monitor_last_run');
-        $interval = $mod->GetPreference('monitor_run_every');
+        $interval = (int)$mod->GetPreference('monitor_run_every');
 
         if(($time - $interval) >= $last_execute ){
             return TRUE;
@@ -73,9 +73,9 @@ class MillcoMonitorTask implements CmsRegularTask
 
         $mod = cms_utils::get_module('MillcoMonitor');
         $pseudocron=1;
-        $result=$mod->monitor_tasks($pseudocron);
         $mod->SetPreference('monitor_last_run',$time);
-
+        $result=$mod->monitor_tasks($pseudocron);
+        
         return true;
     }
 

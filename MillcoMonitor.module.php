@@ -54,10 +54,7 @@ class MillcoMonitor extends CMSModule
 	   If your module does not get included in pages or
 	   templates, return "false" here.
 	  ---------------------------------------------------------*/
-	function IsPluginModule()
-	{
-		return false;
-	}
+	function IsPluginModule(){ return FALSE;}
 
 	/*---------------------------------------------------------
 	   HasAdmin()
@@ -316,8 +313,6 @@ public function get_tasks()
 // run our tasks.
 function monitor_tasks($pseudocron=0){
 
-		$this->Audit( 0, 'MillcoMonitor', 'In monitor tasks function.');
-
 		$report='';
 		$report.='Report generated at  ' . date("Y-m-d H:i", $this->GetPreference('monitor_last_run')) . '<br><br>';
 		$something_changed=0;
@@ -399,8 +394,10 @@ function monitor_tasks($pseudocron=0){
 								$cmsmailer->Send();
 						}
 
+						$this->Audit( 0, 'MillcoMonitor', 'Monitor alert. Report emailed to ' . $to );
+
 					}else{
-						$this->Audit(0,$this->GetName(),'Monitor email address not found.');
+						$this->Audit( 0 ,$this->GetName(),'Monitor email address not found.');
 					}
 	
 

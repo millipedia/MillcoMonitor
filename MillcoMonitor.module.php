@@ -319,7 +319,7 @@ function monitor_tasks($pseudocron=0){
 				$report.='<p>There is a newer version of CMSMS available.</p>';
 
 			}else{
-				$report.='<p>Site is up to date.</p>';
+				$report.='<p>CMS version is up to date.</p>';
 			}
 		}
 

@@ -472,10 +472,17 @@ function cmsms_dir_walk(){
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
 		foreach ($iterator as $fileinfo) {
 			if ($fileinfo->isFile()) {
+
 				if ($fileinfo->getMTime() > $mostRecentFileMTime) {
-					$mostRecentFileMTime = $fileinfo->getMTime();
-					$mostRecentFilePath = $fileinfo->getPathname();
-					$mostRecentFileName = $fileinfo->getBasename();
+					
+					// let's ignore sitemap.xml
+					// TODO it might be nice to have an ignore list one day.
+					if($fileinfo->getBasename() !=='sitemap.xml'){
+						$mostRecentFileMTime = $fileinfo->getMTime();
+						$mostRecentFilePath = $fileinfo->getPathname();
+						$mostRecentFileName = $fileinfo->getBasename();
+					}
+
 				}
 			}
 		}

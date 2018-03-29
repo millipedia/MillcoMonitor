@@ -31,6 +31,10 @@ $lang['help'] = '
 <p>Fire an alert if the SSL certificate  on the site is within a day of expiry.</p>
 <h3>Update check</h3>
 <p>Fire an alert if there is a new version of CMSMS available.</p>
+
+<p>At the moment this module hasn\'t been submitted to the forge. You should check the GitHub repository for changes: <a href="https://github.com/millipedia/MillcoMonitor">https://github.com/millipedia/MillcoMonitor</a>
+    </p>
+    <p>Stephen at <a href="https://www.millipedia.co.uk/">millipedia</a></p>
 ';
 
 ?>

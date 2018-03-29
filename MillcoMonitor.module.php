@@ -26,13 +26,8 @@
 # Or read it online: http://www.gnu.org/licenses/licenses.html#GPL
 #
 #-------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------
-/* Your initial Class declaration. This file's name must
-   be "[class's name].module.php", or, in this case,
-   AgencySearch.module.php
 */
+
 class MillcoMonitor extends CMSModule
 {
 
@@ -310,12 +305,23 @@ public function get_tasks()
 		return $out;
 }
 
-// run our tasks.
+// run our tasks and compile a report.
 function monitor_tasks($pseudocron=0){
 
 		$report='';
 		$report.='Report generated at  ' . date("Y-m-d H:i", time()) . '<br><br>';
 		$something_changed=0;
+
+		// flag if there is a new version of CMSMS
+		if($this->GetPreference('update_check')){
+			if( CmsAdminUtils::site_needs_updating() ){
+				$something_changed=1;
+				$report.='<p>There is a newer version of CMSMS available.</p>';
+
+			}else{
+				$report.='<p>Site is up to date.</p>';
+			}
+		}
 
 		// Are doing the file check? Really should... 
 		if($this->GetPreference('file_check')){

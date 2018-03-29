@@ -29,7 +29,8 @@ $lang['help'] = '
 <p>Monitor will keep a record of the last file to be changed in the default CMSMS directories (excluding upload and tmp) and send an alert if a newer file is detected. If a file appears or is changed that you weren\'t expecting then it can be investigated.</p>
 <h3>Certificate check</h3>
 <p>Fire an alert if the SSL certificate  on the site is within a day of expiry.</p>
-
+<h3>Update check</h3>
+<p>Fire an alert if there is a new version of CMSMS available.</p>
 ';
 
 ?>

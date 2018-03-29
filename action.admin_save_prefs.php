@@ -22,6 +22,17 @@ if($_REQUEST['certificate_check'] == 1){
     $this->SetPreference('certificate_check', FALSE);
 }
 
+if(isset($_REQUEST['monitor_run_every']) && $_REQUEST['monitor_run_every'] > 900 ){
+    $update_interval=(int)$_REQUEST['monitor_run_every'];
+    $this->SetPreference('monitor_run_every', $update_interval);
+}
+
+if($_REQUEST['update_check'] == 1){
+    $this->SetPreference('update_check', TRUE);
+}else{
+    $this->SetPreference('update_check', FALSE);
+}
+
 if($_REQUEST['file_check'] == 1){
     $this->SetPreference('file_check', TRUE);
 }else{

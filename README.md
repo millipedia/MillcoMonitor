@@ -2,7 +2,7 @@
 
 [CMS Made Simple](https://www.cmsmadesimple.org/) module to run a couple of background monitoring tasks:  
 
-### File Monitoring
+## File Monitoring
 The module will walk the default CMSMS directories that shouldn't change and keep track of the last file that was modified.  
 If the file changes then we fire off an email and you can check it out.
 

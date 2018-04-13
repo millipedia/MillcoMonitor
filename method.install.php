@@ -16,7 +16,7 @@ $this->CreatePermission('Use MillcoMonitor', 'Use MillcoMonitor');
 $this->SetPreference('certificate_check', FALSE);
 $this->SetPreference('file_check', TRUE);
 
-$this->SetPreference('monitor_send_email', TRUE);
+$this->SetPreference('monitor_send_email', FALSE);
 $this->SetPreference('monitor_email_address', '');
 
 $this->SetPreference('monitor_last_run',000000);

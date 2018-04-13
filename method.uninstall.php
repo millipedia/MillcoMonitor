@@ -10,7 +10,6 @@ if( !defined('CMS_VERSION') ) exit;
 // remove the permissions
 $this->RemovePermission('Use MillcoMonitor');
 
-
 $this->RemovePreference('certificate_check');
 $this->RemovePreference('file_check');
 $this->RemovePreference('update_check');

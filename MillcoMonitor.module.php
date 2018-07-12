@@ -228,7 +228,7 @@ class MillcoMonitor extends CMSModule
 	}
 
 
-function SearchResult($returnid, $fdid, $attr = '')
+	function SearchResult($returnid, $fdid, $attr = '')
 	{
 		$result = array();
 
@@ -252,7 +252,6 @@ function SearchResult($returnid, $fdid, $attr = '')
 		// 	}
 		// }
 
-
 		return $result;
 	}
 
@@ -274,260 +273,260 @@ function SearchResult($returnid, $fdid, $attr = '')
 
 	}
 
-//add dataTables call to admin.
-function GetFrontendHeaderHTML(){
+	//add eg dataTables call to admin.
+	function GetHeaderHTML(){
 
-	return '';
+		return '';
 
-}
+	}
 
-//add eg dataTables call to admin.
-function GetHeaderHTML(){
-
-	return '';
-
-}
-
-public function HasCapability($capability, $params = array())
-{
-		if( $capability == 'tasks' ){
-			return TRUE;
-		}else{
-			return FALSE;
-		}
-
-}
-
-public function get_tasks()
-{
-		$out = array();
-		$out[] = new MillcoMonitorTask();
-		return $out;
-}
-
-// run our tasks and compile a report.
-function monitor_tasks($pseudocron=0){
-
-		$report='';
-		$report.='Report generated at  ' . date("Y-m-d H:i", time()) . '<br><br>';
-		$something_changed=0;
-
-		// flag if there is a new version of CMSMS
-		if($this->GetPreference('update_check')){
-			if( CmsAdminUtils::site_needs_updating() ){
-				$something_changed=1;
-				$report.='<p>There is a newer version of CMSMS available.</p>';
-
+	public function HasCapability($capability, $params = array())
+	{
+			if( $capability == 'tasks' ){
+				return TRUE;
 			}else{
-				$report.='<p>CMS version is up to date.</p>';
+				return FALSE;
 			}
-		}
 
-		// Are doing the file check? Really should... 
-		if($this->GetPreference('file_check')){
+	}
 
-			$recent=$this->cmsms_dir_walk();
+	public function get_tasks()
+	{
+			$out = array();
+			$out[] = new MillcoMonitorTask();
+			return $out;
+	}
 
-			// cmsm_dir_walk returns an array with:
-			// [mostRecentFileMTime]
-			// [mostRecentFilePath]  
-			// [mostRecentFileName]
-			
-			if($recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name')){
+	// run our tasks and compile a report.
+	function monitor_tasks($pseudocron=0){
+
+			$report='';
+			$report.='Report generated at  ' . date("Y-m-d H:i", time()) . '<br><br>';
+			$something_changed=0;
+
+			// flag if there is a new version of CMSMS
+			if($this->GetPreference('update_check')){
+				if( CmsAdminUtils::site_needs_updating() ){
+					$something_changed=1;
+					$report.='<p>There is a newer version of CMSMS available.</p>';
+
+				}else{
+					$report.='<p>CMS version is up to date.</p>';
+				}
+			}
+
+			// Are doing the file check? Really should... 
+			if($this->GetPreference('file_check')){
+
+				$recent=$this->cmsms_dir_walk();
+
+				// cmsm_dir_walk returns an array with:
+				// [mostRecentFileMTime]
+				// [mostRecentFilePath]  
+				// [mostRecentFileName]
 				
-				$something_changed=1;
+				if($recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name')){
+					
+					$something_changed=1;
 
-				// Add to report.
-				$report.='<p><b>File changed</b></p><br>';
+					// Add to report.
+					$report.='<p><b>File changed</b></p><br>';
 
-				$report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
-				$report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
-				$report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
-				$report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
-				$report.='<br><br>';
+					$report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
+					$report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
+					$report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
+					$report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
+					$report.='<br><br>';
 
-				// update the last updates.
-				$this->SetPreference('monitor_latest_file_name', $recent['mostRecentFileName']);
-				$this->SetPreference('monitor_latest_file_path', $recent['mostRecentFilePath']);
-				$this->SetPreference('monitor_latest_filetime', $recent['mostRecentFileMTime']);
+					// update the last updates.
+					$this->SetPreference('monitor_latest_file_name', $recent['mostRecentFileName']);
+					$this->SetPreference('monitor_latest_file_path', $recent['mostRecentFilePath']);
+					$this->SetPreference('monitor_latest_filetime', $recent['mostRecentFileMTime']);
 
-			}else{
-				$report.='<p>No files changed.</p><br>';
+				}else{
+					$report.='<p>No files changed.</p><br>';
+				}
 			}
-		}
 
-		// Check certificate expiry date
-		if($this->GetPreference('certificate_check')){
+			// Check certificate expiry date
+			if($this->GetPreference('certificate_check')){
 
-			$cert_time=$this->check_certificate();
+				$cert_time=$this->check_certificate();
 
-			$two_days = time() + (2 * 24 * 60 * 60); // 2 days; 24 hours; 60 mins; 60 secs
-			if($cert_time < $two_days){
+				// sometimes we just don't get a sensible response from the server so 
+				// let's only do this if we have a time.
+				if($cert_time){
+
+					$two_days = time() + (2 * 24 * 60 * 60); // 2 days; 24 hours; 60 mins; 60 secs
+					
+					if($cert_time < $two_days){
+						
+						$something_changed=1;
+
+						$report.='<p><b>Certificate expires within two days</b></p><br>';
+						$report.='<p><b>Expiry date is :</b>' . date("Y-m-d" , $cert_time) . '</p>';
+					
+					}else{
+					
+						$report.='<p><b>Certificate expiry</b></p>';
+						$report.='<p><b>Expiry date is :</b> ' . date("Y-m-d" , $cert_time) . '</p>';
+					
+					}
+
+				}
+
 				
-				$something_changed=1;
+			}
 
-				$report.='<p><b>Certificate expires within two days</b></p><br>';
-				$report.='<p><b>Expiry date is :</b>' . date("Y-m-d" , $cert_time) . '</p>';
-			
-			}else{
-			
-				$report.='<p><b>Certificate expiry</b></p>';
-				$report.='<p><b>Expiry date is :</b> ' . date("Y-m-d" , $cert_time) . '</p>';
-			
+			// if we're in cron and something had changed then email this report
+			if($pseudocron && $something_changed){
+
+					if($this->GetPreference('monitor_send_email')){
+
+						// if email preference set and $pseudocron ... send email.
+						$to=$this->GetPreference('monitor_email_address');
+
+						if($to!==''){
+
+							$subject="Monitor report for " . $this->config['root_url'];
+
+							$cmsmailer = new cms_mailer;
+							if( $cmsmailer ) {
+		
+									$cmsmailer->AddAddress( $to );
+									$cmsmailer->SetSubject($subject);
+									$cmsmailer->IsHTML( true );
+									$cmsmailer->SetBody( $report );
+									$cmsmailer->Send();
+							}
+
+							$this->Audit( 0, 'MillcoMonitor', 'Monitor alert. Report emailed to ' . $to );
+
+						}else{
+							$this->Audit( 0 ,$this->GetName(),'Monitor email address not found.');
+						}
+		
+
+					}else{// really don't know why you wouldn't want to email, but hey.
+
+						$this->Audit(0,$this->GetName(),'Monitor alert. We found something you should check.');
+
+					}
+
+				//return success for job manager.
+				return true;
+
+			}else{ // we're in admin so return our report.
+
+				return $report;
+			}
+
+	}
+
+
+	// check when the ssl certificate is going to expire.
+	function check_certificate(){
+
+		$config = \cms_config::get_instance();
+		$url = $config['root_url'];
+		
+		$orignal_parse = parse_url($url, PHP_URL_HOST);
+		$get = stream_context_create(array("ssl" => array("capture_peer_cert" => TRUE)));
+		$read = stream_socket_client("ssl://".$orignal_parse.":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $get);
+		$cert = stream_context_get_params($read);
+		$certinfo = openssl_x509_parse($cert['options']['ssl']['peer_certificate']);
+
+		return $certinfo['validTo_time_t'];
+	}
+
+
+	// Walks all suitable CMSMS directories and returns the most recent filename and time.
+	function cmsms_dir_walk(){
+
+		$mostRecentFileMTime =0;
+		$mostRecentFilePath = '';
+		$mostRecentFileName = '';
+
+		$root_path = $this->config['root_path'];
+
+		// top level files
+		foreach (new DirectoryIterator($root_path) as $fileinfo) {
+			if ($fileinfo->isFile()) {
+				if ($fileinfo->getMTime() > $mostRecentFileMTime) {
+					$mostRecentFileMTime = $fileinfo->getMTime();
+					$mostRecentFilePath = $fileinfo->getPathname();
+					$mostRecentFileName = $fileinfo->getBasename();
+				}
 			}
 		}
+		
+		// loop through all the CMSMS dirs
+		// that aren't silly to check.
+		$dirs_to_check=array(
+			"admin",
+			"assets",
+			"doc",
+			"lib",
+			"modules");
 
+		foreach($dirs_to_check as $dir){
 
-		// if we're in cron and something had changed then email this report
-		if($pseudocron && $something_changed){
+			$path=$root_path . '/' . $dir .'/';
 
-				if($this->GetPreference('monitor_send_email')){
+			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
+			foreach ($iterator as $fileinfo) {
+				if ($fileinfo->isFile()) {
 
-					// if email preference set and $pseudocron ... send email.
-					$to=$this->GetPreference('monitor_email_address');
-
-					if($to!==''){
-
-						$subject="Monitor report for " . $this->config['root_url'];
-
-						$cmsmailer = new cms_mailer;
-						if( $cmsmailer ) {
-	
-								$cmsmailer->AddAddress( $to );
-								$cmsmailer->SetSubject($subject);
-								$cmsmailer->IsHTML( true );
-								$cmsmailer->SetBody( $report );
-								$cmsmailer->Send();
+					if ($fileinfo->getMTime() > $mostRecentFileMTime) {
+						
+						// let's ignore sitemap.xml
+						// TODO it might be nice to have an ignore list one day.
+						if($fileinfo->getBasename() !=='sitemap.xml'){
+							$mostRecentFileMTime = $fileinfo->getMTime();
+							$mostRecentFilePath = $fileinfo->getPathname();
+							$mostRecentFileName = $fileinfo->getBasename();
 						}
 
-						$this->Audit( 0, 'MillcoMonitor', 'Monitor alert. Report emailed to ' . $to );
-
-					}else{
-						$this->Audit( 0 ,$this->GetName(),'Monitor email address not found.');
 					}
-	
-
-				}else{// really don't know why you wouldn't want an email, but hey.
-
-					$this->Audit(0,$this->GetName(),'Monitor alert. We found something you should check.');
-
 				}
+			}
+		}
 
-			//return success for job manager.
+		$info=array(
+				"mostRecentFileMTime" => $mostRecentFileMTime,
+				"mostRecentFilePath" => $mostRecentFilePath,
+				"mostRecentFileName" => $mostRecentFileName
+			);
+
+		return $info;
+
+	}
+
+	// check a url using curl
+	function check_url( $url ) {
+		
+		$timeout = 10;
+		
+		$ch = curl_init();
+		// If the given URL is missing a scheme name (such as "http://" or "ftp://" etc) 
+		// then libcurl will make a guess based on the host.
+		curl_setopt ( $ch, CURLOPT_URL, $url );
+		
+		curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt ( $ch, CURLOPT_TIMEOUT, $timeout );
+		$http_respond = curl_exec($ch);
+		$http_respond = trim( strip_tags( $http_respond ) );
+		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+
+		curl_close( $ch );
+
+		if ( ( $http_code == "200" ) || ( $http_code == "302" ) ) {
 			return true;
-
-		}else{ // we're in admin so return our report.
-
-			return $report;
+		} else {
+			// return $http_code;, possible too
+			return false;
 		}
 
-}
-
-
-// check when the ssl certificate is going to expire.
-function check_certificate(){
-
-	$config = \cms_config::get_instance();
-	$url = $config['root_url'];
-	
-	$orignal_parse = parse_url($url, PHP_URL_HOST);
-	$get = stream_context_create(array("ssl" => array("capture_peer_cert" => TRUE)));
-	$read = stream_socket_client("ssl://".$orignal_parse.":443", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $get);
-	$cert = stream_context_get_params($read);
-	$certinfo = openssl_x509_parse($cert['options']['ssl']['peer_certificate']);
-
-	//die("Expiry date is: " . date("d m Y" , $certinfo['validTo_time_t']));
-
-	return $certinfo['validTo_time_t'];
-}
-
-
-// Walks all suitable CMSMS directories and returns the most recent filename and time.
-function cmsms_dir_walk(){
-
-	$mostRecentFileMTime =0;
-	$mostRecentFilePath = '';
-	$mostRecentFileName = '';
-
-	$root_path = $this->config['root_path'];
-
-	// top level files
-	foreach (new DirectoryIterator($root_path) as $fileinfo) {
-		if ($fileinfo->isFile()) {
-			if ($fileinfo->getMTime() > $mostRecentFileMTime) {
-				$mostRecentFileMTime = $fileinfo->getMTime();
-				$mostRecentFilePath = $fileinfo->getPathname();
-				$mostRecentFileName = $fileinfo->getBasename();
-			}
-		}
 	}
 	
-	// loop through all the CMSMS dirs
-	// that aren't silly to check.
-	$dirs_to_check=array(
-		"admin",
-		"assets",
-		"doc",
-		"lib",
-		"modules");
-
-	foreach($dirs_to_check as $dir){
-
-		$path=$root_path . '/' . $dir .'/';
-
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
-		foreach ($iterator as $fileinfo) {
-			if ($fileinfo->isFile()) {
-
-				if ($fileinfo->getMTime() > $mostRecentFileMTime) {
-					
-					// let's ignore sitemap.xml
-					// TODO it might be nice to have an ignore list one day.
-					if($fileinfo->getBasename() !=='sitemap.xml'){
-						$mostRecentFileMTime = $fileinfo->getMTime();
-						$mostRecentFilePath = $fileinfo->getPathname();
-						$mostRecentFileName = $fileinfo->getBasename();
-					}
-
-				}
-			}
-		}
-	}
-
-	$info=array(
-			"mostRecentFileMTime" => $mostRecentFileMTime,
-			"mostRecentFilePath" => $mostRecentFilePath,
-			"mostRecentFileName" => $mostRecentFileName
-		);
-
-	return $info;
-
-}
-
-// check a url using curl
-function check_url( $url ) {
-	
-	$timeout = 10;
-	
-	$ch = curl_init();
-	// If the given URL is missing a scheme name (such as "http://" or "ftp://" etc) then libcurl will make a guess based on the host.
-	curl_setopt ( $ch, CURLOPT_URL, $url );
-	
-	curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
-	curl_setopt ( $ch, CURLOPT_TIMEOUT, $timeout );
-	$http_respond = curl_exec($ch);
-	$http_respond = trim( strip_tags( $http_respond ) );
-	$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-
-	curl_close( $ch );
-
-	if ( ( $http_code == "200" ) || ( $http_code == "302" ) ) {
-	  return true;
-	} else {
-	  // return $http_code;, possible too
-	  return false;
-	}
-
-  }
-   
 }

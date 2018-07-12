@@ -3,7 +3,7 @@
 $lang['friendlyname'] = 'Millco Monitor';
 $lang['postinstall'] = 'Be sure to set "Manage Millco Monitor" permissions to use this module!';
 $lang['postuninstall'] = 'All gone. Hope you really meant it."';
-$lang['really_uninstall'] = 'Sure? This is going to break any modules that rely on MillcoMonitor. Theres no data to lose though so you can put it back if you need).';
+$lang['really_uninstall'] = 'Are you sure you want to uninstall this module?.';
 $lang['uninstalled'] = 'Module Uninstalled.';
 $lang['installed'] = 'Module version %s installed.';
 $lang['prefsupdated'] = 'Module preferences updated.';

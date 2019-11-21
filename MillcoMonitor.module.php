@@ -302,7 +302,15 @@ class MillcoMonitor extends CMSModule
 
 			$report='';
 			$report.='Report generated at  ' . date("Y-m-d H:i", time()) . '<br><br>';
-			$something_changed=0;
+            $something_changed=0;
+            
+            // let's log the fact we ran a monitor job anyway.
+			if($pseudocron){
+                $this->Audit( 0 ,$this->GetName(),'Monitor report trigged by cron.');
+            }else{
+                $this->Audit( 0 ,$this->GetName(),'Monitor report trigged manualy.');
+            }
+
 
 			// flag if there is a new version of CMSMS
 			if($this->GetPreference('update_check')){
@@ -326,12 +334,22 @@ class MillcoMonitor extends CMSModule
                 // [mostRecentFileName]
                 // [FileCount]
 				
-				if($recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name') || $recent['FileCount']!=$this->GetPreference('monitor_file_count')){
+                if( $recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name') 
+                    || $recent['FileCount']!=$this->GetPreference('monitor_file_count')
+                    ){
 					
 					$something_changed=1;
 
 					// Add to report.
-					$report.='<h2>File changed</h2>';
+                    $report.='<h2>File changed</h2>';
+                    
+                    // TODO: should template this really.
+                    $report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
+                    $report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
+                    $report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
+                    $report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
+                    $report.='<b>File count :</b> ' .  $recent['FileCount'] . ' (previous was ' . $this->GetPreference('monitor_file_count') . ')<br>';
+                    $report.='<br><br>';
 
 					// update the last values.
 					$this->SetPreference('monitor_latest_file_name', $recent['mostRecentFileName']);
@@ -341,16 +359,17 @@ class MillcoMonitor extends CMSModule
 
 				}else{
                     $report.='<h2>No files changed.</h2>';
+                    // TODO: should template this really.
+                    $report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
+                    $report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
+                    $report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
+                    $report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
+                    $report.='<b>File count :</b> ' .  $recent['FileCount'] . ' (previous was ' . $this->GetPreference('monitor_file_count') . ')<br>';
+                    $report.='<br><br>';
                     
                 }
 
-                // TODO: should template this really.
-                $report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
-                $report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
-                $report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
-                $report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
-                $report.='<b>File count :</b> ' .  $recent['FileCount'] . ' (previous was ' . $this->GetPreference('monitor_file_count') . ')<br>';
-                $report.='<br><br>';
+
 			}
 
 			// Check certificate expiry date
@@ -381,8 +400,8 @@ class MillcoMonitor extends CMSModule
 				}
 
 				
-			}
-
+            }
+            
 			// if we're in cron and something had changed then see if we need to email this report
 			if($pseudocron && $something_changed){
 
@@ -412,13 +431,13 @@ class MillcoMonitor extends CMSModule
 						}
 		
 
-					}else{// really don't know why you wouldn't want to email, but hey.
+					}else{// really don't know why you wouldn't want to send an email, but hey.
 
 						$this->Audit(0,$this->GetName(),'Monitor alert. We found something you should check.');
 
 					}
 
-				//return success for job manager.
+				// return success for job manager.
 				return true;
 
 			}else{ // we're in admin so just return our report.
@@ -479,9 +498,11 @@ class MillcoMonitor extends CMSModule
 		// loop through all the CMSMS dirs
 		// that aren't silly to check.
 
-		// TODO: add custom admin directory or
+        // TODO: 
+        // add custom admin directory or
 		// check for directory exists
-		// or both.
+        // or both. Or we could have a list in the admin area that we can just tweak.
+        
  		$dirs_to_check=array(
 			"admin",
 			"assets",

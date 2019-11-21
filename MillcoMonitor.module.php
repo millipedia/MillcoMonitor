@@ -431,7 +431,7 @@ class MillcoMonitor extends CMSModule
 						}
 		
 
-					}else{// really don't know why you wouldn't want to send an email, but hey.
+					}else{// really don't know why you wouldn't want to email, but hey.
 
 						$this->Audit(0,$this->GetName(),'Monitor alert. We found something you should check.');
 
@@ -498,11 +498,9 @@ class MillcoMonitor extends CMSModule
 		// loop through all the CMSMS dirs
 		// that aren't silly to check.
 
-        // TODO: 
-        // add custom admin directory or
+		// TODO: add custom admin directory or
 		// check for directory exists
-        // or both. Or we could have a list in the admin area that we can just tweak.
-        
+		// or both.
  		$dirs_to_check=array(
 			"admin",
 			"assets",

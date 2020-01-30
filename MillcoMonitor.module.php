@@ -35,7 +35,7 @@ class MillcoMonitor extends CMSModule
 	function GetVersion(){ return '1.0';}
 	function GetHelp(){	return $this->Lang('help');}
 	function GetAuthor(){ return 'stephen at millipedia';}
-	function GetAuthorEmail(){ return 'stephen@millipedia.co.uk';}
+	function GetAuthorEmail(){ return 'stephen at millipedia.co.uk';}
 	function GetChangeLog(){ return $this->Lang('changelog');}
 
 	/*---------------------------------------------------------
@@ -135,13 +135,6 @@ class MillcoMonitor extends CMSModule
 
 	/*---------------------------------------------------------
 	   MinimumCMSVersion()
-	   Your module may require functions or objects from
-	   a specific version of CMS Made Simple.
-	   Ever since version 0.11, you can specify which minimum
-	   CMS MS version is required for your module, which will
-	   prevent it from being installed by a version of CMS that
-	   can't run it.
-
 	   This method returns a string representing the
 	   minimum version that this module requires.
 	   ---------------------------------------------------------*/
@@ -411,7 +404,7 @@ class MillcoMonitor extends CMSModule
 						}
 		
 
-					}else{// really don't know why you wouldn't want to email, but hey.
+					}else{ // really don't know why you wouldn't want to email, but hey.
 
 						$this->Audit(0,$this->GetName(),'Monitor alert. We found something you should check.');
 
@@ -428,8 +421,9 @@ class MillcoMonitor extends CMSModule
 
 
 	 /**
-     * check when the ssl certificate is going to expire.
-     */	function check_certificate(){
+     * check when the site ssl certificate is going to expire.
+     */	
+    function check_certificate(){
 
 		$config = \cms_config::get_instance();
 		$url = $config['root_url'];
@@ -443,13 +437,11 @@ class MillcoMonitor extends CMSModule
 		return $certinfo['validTo_time_t'];
 	}
 
-
 	/**
      * Walks all suitable CMSMS directories and returns the most recent filename and time
      * and now a file count.
      */
 	function cmsms_dir_walk(){
-
 
         $file_count=0;
 
@@ -512,10 +504,7 @@ class MillcoMonitor extends CMSModule
                         $file_count++;
                     }
                 }
-
-            }
-
-		
+            }	
 		}
 
 		$info=array(
@@ -540,15 +529,17 @@ class MillcoMonitor extends CMSModule
 	}
 
 	// TODO: how about a check for bak.config php and maybe removing that?
-	
-	
-	
-	// check a url using curl
+		
+	/**
+     * Check a url with curl
+     * 
+     */
 	function check_url( $url ) {
 		
 		$timeout = 10;
 		
-		$ch = curl_init();
+        $ch = curl_init();
+        
 		// If the given URL is missing a scheme name (such as "http://" or "ftp://" etc) 
 		// then libcurl will make a guess based on the host.
 		curl_setopt ( $ch, CURLOPT_URL, $url );

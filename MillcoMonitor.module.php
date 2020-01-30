@@ -330,6 +330,7 @@ class MillcoMonitor extends CMSModule
 					$something_changed=1;
 
 					// Add to report.
+					// TODO: should template this really.
 					$report.='<p><b>File changed</b></p><br>';
 
 					$report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
@@ -378,12 +379,12 @@ class MillcoMonitor extends CMSModule
 				
 			}
 
-			// if we're in cron and something had changed then email this report
+			// if we're in cron and something had changed then see if we need to email this report
 			if($pseudocron && $something_changed){
 
 					if($this->GetPreference('monitor_send_email')){
 
-						// if email preference set and $pseudocron ... send email.
+						// if email preference set ... send email.
 						$to=$this->GetPreference('monitor_email_address');
 
 						if($to!==''){
@@ -462,34 +463,45 @@ class MillcoMonitor extends CMSModule
 		
 		// loop through all the CMSMS dirs
 		// that aren't silly to check.
-		$dirs_to_check=array(
-			"admin",
+ 		$dirs_to_check=array(
 			"assets",
 			"doc",
 			"lib",
-			"modules");
+            "modules");
+
+        // add admin dir from config in case we have a custom one.
+        $dirs_to_check[]=$this->config['admin_dir'];
+
+        // TODO: be nice to be able to pass extra directories from the module
+        // as a preference
 
 		foreach($dirs_to_check as $dir){
 
-			$path=$root_path . '/' . $dir .'/';
+            $path=$root_path . '/' . $dir .'/';
+            
+            if(is_dir($path)){
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
-			foreach ($iterator as $fileinfo) {
-				if ($fileinfo->isFile()) {
+                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
+                foreach ($iterator as $fileinfo) {
+                    if ($fileinfo->isFile()) {
+    
+                        if ($fileinfo->getMTime() > $mostRecentFileMTime) {
+                            
+                            // let's ignore sitemap.xml
+                            // TODO it might be nice to have an ignore list one day.
+                            if($fileinfo->getBasename() !=='sitemap.xml'){
+                                $mostRecentFileMTime = $fileinfo->getMTime();
+                                $mostRecentFilePath = $fileinfo->getPathname();
+                                $mostRecentFileName = $fileinfo->getBasename();
+                            }
+    
+                        }
+                    }
+                }
 
-					if ($fileinfo->getMTime() > $mostRecentFileMTime) {
-						
-						// let's ignore sitemap.xml
-						// TODO it might be nice to have an ignore list one day.
-						if($fileinfo->getBasename() !=='sitemap.xml'){
-							$mostRecentFileMTime = $fileinfo->getMTime();
-							$mostRecentFilePath = $fileinfo->getPathname();
-							$mostRecentFileName = $fileinfo->getBasename();
-						}
+            }
 
-					}
-				}
-			}
+		
 		}
 
 		$info=array(
@@ -502,6 +514,20 @@ class MillcoMonitor extends CMSModule
 
 	}
 
+
+	// check we have the config file as read only.
+	// ... we must have this func somewhere already cos we do get warned about it.
+	function check_config_permissions(){
+
+		// TODO: get file path check permisions.
+		// $file=''
+		// decoct(fileperms($file) & 0777); // return "755" for example
+	}
+
+	// TODO: how about a check for bak.config php and maybe removing that?
+	
+	
+	
 	// check a url using curl
 	function check_url( $url ) {
 		

@@ -3,10 +3,8 @@
 [CMS Made Simple](https://www.cmsmadesimple.org/) module to run a couple of background monitoring tasks:  
 
 ## File Monitoring
-The module will walk the default CMSMS directories that shouldn't change and keep track of the last file that was changed by modified date.
-We now also keep track of the number of files that have changed.
-
-If there are changes then we fire off an email and you can check it out.
+The module will walk the default CMSMS directories that shouldn't change and keep track of the last file that was modified.  
+If the file changes then we fire off an email and you can check it out.
 
 Obviously this is no substitute for running Maldet or even using the CMS system verification, but we've found it useful.
 

@@ -3,11 +3,10 @@
 #-------------------------------------------------------------------------
 # Module: MillcoMonitor
 # Version: 1.0
-# //stephen 180119
+# 
 #-------------------------------------------------------------------------
 # CMS - CMS Made Simple is (c) 2005 by Ted Kulp (wishy@cmsmadesimple.org)
 # This project's homepage is: http://www.cmsmadesimple.org
-# The module's homepage is: http://dev.cmsmadesimple.org/projects/agencySearch/
 #
 #-------------------------------------------------------------------------
 #
@@ -315,7 +314,7 @@ class MillcoMonitor extends CMSModule
 				}
 			}
 
-			// Are doing the file check? Really should... 
+			// Are we doing the file check? Really should...
 			if($this->GetPreference('file_check')){
 
 				$recent=$this->cmsms_dir_walk();
@@ -323,30 +322,34 @@ class MillcoMonitor extends CMSModule
 				// cmsm_dir_walk returns an array with:
 				// [mostRecentFileMTime]
 				// [mostRecentFilePath]  
-				// [mostRecentFileName]
-				
-				if($recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name')){
+                // [mostRecentFileName]
+                // [FileCount]
+                				
+				if($recent['mostRecentFileName']!==$this->GetPreference('monitor_latest_file_name') || $recent['FileCount']!=$this->GetPreference('monitor_file_count')){
 					
 					$something_changed=1;
 
 					// Add to report.
-					// TODO: should template this really.
-					$report.='<p><b>File changed</b></p><br>';
+					$report.='<h2>File changed</h2>';
 
-					$report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
-					$report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
-					$report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
-					$report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
-					$report.='<br><br>';
-
-					// update the last updates.
+					// update the last values.
 					$this->SetPreference('monitor_latest_file_name', $recent['mostRecentFileName']);
 					$this->SetPreference('monitor_latest_file_path', $recent['mostRecentFilePath']);
-					$this->SetPreference('monitor_latest_filetime', $recent['mostRecentFileMTime']);
+                    $this->SetPreference('monitor_latest_filetime', $recent['mostRecentFileMTime']);
+                    $this->SetPreference('monitor_file_count', $recent['FileCount']);
 
 				}else{
-					$report.='<p>No files changed.</p><br>';
-				}
+                    $report.='<h2>No files changed.</h2>';
+                    
+                }
+
+                // TODO: should template this really.
+                $report.='<b>Newest file :</b> ' .  $recent['mostRecentFileName'] . '<br>';
+                $report.='<b>Previous file :</b> ' .  $this->GetPreference('monitor_latest_file_name') . '<br>';
+                $report.='<b>File date time :</b> ' .   date("Y-m-d h:m:s", $recent['mostRecentFileMTime']) . '<br>';
+                $report.='<b>File path :</b> ' .  $recent['mostRecentFilePath'] . '<br>';
+                $report.='<b>File count :</b> ' .  $recent['FileCount'] . ' (previous was ' . $this->GetPreference('monitor_file_count') . ')<br>';
+                $report.='<br><br>';
 			}
 
 			// Check certificate expiry date
@@ -417,16 +420,16 @@ class MillcoMonitor extends CMSModule
 				//return success for job manager.
 				return true;
 
-			}else{ // we're in admin so return our report.
-
+			}else{ // we're in admin so just return our report.
 				return $report;
 			}
 
 	}
 
 
-	// check when the ssl certificate is going to expire.
-	function check_certificate(){
+	 /**
+     * check when the ssl certificate is going to expire.
+     */	function check_certificate(){
 
 		$config = \cms_config::get_instance();
 		$url = $config['root_url'];
@@ -441,8 +444,14 @@ class MillcoMonitor extends CMSModule
 	}
 
 
-	// Walks all suitable CMSMS directories and returns the most recent filename and time.
+	/**
+     * Walks all suitable CMSMS directories and returns the most recent filename and time
+     * and now a file count.
+     */
 	function cmsms_dir_walk(){
+
+
+        $file_count=0;
 
 		$mostRecentFileMTime =0;
 		$mostRecentFilePath = '';
@@ -453,13 +462,17 @@ class MillcoMonitor extends CMSModule
 		// top level files
 		foreach (new DirectoryIterator($root_path) as $fileinfo) {
 			if ($fileinfo->isFile()) {
+
 				if ($fileinfo->getMTime() > $mostRecentFileMTime) {
 					$mostRecentFileMTime = $fileinfo->getMTime();
 					$mostRecentFilePath = $fileinfo->getPathname();
 					$mostRecentFileName = $fileinfo->getBasename();
-				}
+                }
+                
+                $file_count++;
 			}
 		}
+		
 		
 		// loop through all the CMSMS dirs
 		// that aren't silly to check.
@@ -488,7 +501,7 @@ class MillcoMonitor extends CMSModule
                         if ($fileinfo->getMTime() > $mostRecentFileMTime) {
                             
                             // let's ignore sitemap.xml
-                            // TODO it might be nice to have an ignore list one day.
+                            // TODO: it might be nice to have an ignore list one day.
                             if($fileinfo->getBasename() !=='sitemap.xml'){
                                 $mostRecentFileMTime = $fileinfo->getMTime();
                                 $mostRecentFilePath = $fileinfo->getPathname();
@@ -496,6 +509,7 @@ class MillcoMonitor extends CMSModule
                             }
     
                         }
+                        $file_count++;
                     }
                 }
 
@@ -507,7 +521,8 @@ class MillcoMonitor extends CMSModule
 		$info=array(
 				"mostRecentFileMTime" => $mostRecentFileMTime,
 				"mostRecentFilePath" => $mostRecentFilePath,
-				"mostRecentFileName" => $mostRecentFileName
+                "mostRecentFileName" => $mostRecentFileName,
+                "FileCount" => $file_count
 			);
 
 		return $info;
